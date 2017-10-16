@@ -63,6 +63,39 @@ function Invo (str, cb) {
 //
 //
 
+// TODO: complete the rest of the forum functions.
+
+exports.addUser = function(u,p,cb){
+	invo = new Invo('add user', cb);
+	invo.u = u;
+	invo.p = p;
+	client.write(JSON.stringify(invo));
+}
+
+
+exports.addSubject = function(s,cb){
+	invo = new Invo('add subject', cb);
+	invo.s = u;
+	client.write(JSON.stringify(invo));
+}
+
+exports.getSubjectList = function (cb) {
+	client.write (JSON.stringify(new Invo ('get subject list', cb)));
+}
+
+exports.getUserList = function(cb){
+	client.write(JSON.stringify(new Invo('add user list', cb)));
+}
+
+exports.login = function (u, p, cb) {
+	invo = new Invo('login', cb);
+	invo.u = u;
+	invo.p = p;
+	client.write(JSON.stringify(invo));
+}
+
+//========
+
 exports.getPublicMessageList = function  (sbj, cb) {
 	var invo = new Invo ('get public message list', cb);	
 	invo.sbj = sbj;
@@ -76,11 +109,8 @@ exports.getPrivateMessageList = function (u1, u2, cb) {
 	client.write (JSON.stringify(invo));
 }
 
-exports.getSubjectList = function (cb) {
-	client.write (JSON.stringify(new Invo ('get subject list', cb)));
-}
 
-// TODO: complete the rest of the forum functions.
+
 
 
 
