@@ -17,7 +17,8 @@ io.on('connection', function(sock) {
 	 sock.on('get message list', function(){
 		  console.log("Event: get message list: ");
           getMessageList (function(arg){
-          sock.emit ('message list', JSON.stringify(arg));
+              console.log(JSON.stringify(arg))
+            sock.emit ('message list', JSON.stringify(arg));
         });  		
   	});
 });

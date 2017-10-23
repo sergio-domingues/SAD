@@ -63,8 +63,6 @@ function Invo (str, cb) {
 //
 //
 
-// TODO: complete the rest of the forum functions.
-
 exports.addUser = function(u,p,cb){
 	invo = new Invo('add user', cb);
 	invo.u = u;
@@ -75,7 +73,7 @@ exports.addUser = function(u,p,cb){
 
 exports.addSubject = function(s,cb){
 	invo = new Invo('add subject', cb);
-	invo.s = u;
+	invo.sbj = s;
 	client.write(JSON.stringify(invo));
 }
 
@@ -84,7 +82,7 @@ exports.getSubjectList = function (cb) {
 }
 
 exports.getUserList = function(cb){
-	client.write(JSON.stringify(new Invo('add user list', cb)));
+	client.write(JSON.stringify(new Invo('get user list', cb)));
 }
 
 exports.login = function (u, p, cb) {
@@ -94,12 +92,10 @@ exports.login = function (u, p, cb) {
 	client.write(JSON.stringify(invo));
 }
 
-//========
-
-exports.getPublicMessageList = function  (sbj, cb) {
-	var invo = new Invo ('get public message list', cb);	
-	invo.sbj = sbj;
-	client.write (JSON.stringify(invo));
+exports.addPrivateMessage = function (msg, cb){
+	invo = new Invo('add private msg', cb);
+	invo.msg = msg;
+	client.write(JSON.stringify(invo));
 }
 
 exports.getPrivateMessageList = function (u1, u2, cb) {
@@ -109,8 +105,20 @@ exports.getPrivateMessageList = function (u1, u2, cb) {
 	client.write (JSON.stringify(invo));
 }
 
+exports.getSubject = function (sbj, cb) {
+	invo = new Invo ('get subject', cb);
+	invo.sbj = sbj;
+	client.write (JSON.stringify(invo));
+}
 
+exports.addPublicMessage = function  (msg, cb) {
+	var invo = new Invo ('add public message', cb);	
+	invo.msg = msg;
+	client.write (JSON.stringify(invo));
+}
 
-
-
-
+exports.getPublicMessageList = function  (sbj, cb) {
+	var invo = new Invo ('get public message list', cb);	
+	invo.sbj = sbj;
+	client.write (JSON.stringify(invo));
+}

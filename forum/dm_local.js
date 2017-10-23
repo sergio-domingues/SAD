@@ -38,7 +38,7 @@ exports.getPrivateMessageList = function (u1, u2, cb) {
 	cb (list);
 }
 
-function getSubject (sbj, cb) {
+exports.getSubject = function (sbj, cb) {
 	var id = dm.getSubject (sbj);
 	cb (id);
 }

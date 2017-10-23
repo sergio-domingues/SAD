@@ -5,6 +5,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+#unnecessary files
+NodeJS-in-Vagrant-master/
+express chat/
+
 # Runtime data
 pids
 *.pid

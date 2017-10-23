@@ -1,8 +1,20 @@
 var net = require('net');
 var HOST = '127.0.0.1';
-var PORT = 9000;
+var PORT = portnotDef();
 
 var dm = require ('./dm.js');
+
+function portnotDef(){
+    var args = process.argv.slice(2);
+
+    var port = PORT;
+
+    if(args.length > 0){
+        port = args[0];
+    }
+
+    return port;
+}
 
 // Create the server socket, on client connections, bind event handlers
 server = net.createServer(function(sock) {
