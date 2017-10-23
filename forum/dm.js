@@ -90,7 +90,7 @@ exports.getPrivateMessageList = function (u1, u2) {
 	return JSON.stringify (privateMessages[k]);
 }
 
-function getSubject (sbj) {
+exports.getSubject = function (sbj) {
 	for (var i in subjects) {
 		if (subjects[i] == sbj) return i;
 	}
