@@ -1,13 +1,13 @@
 var net = require('net');
 var HOST = '127.0.0.1';
-var PORT = portnotDef();
+var PORT = getPortByArg();
 
 var dm = require ('./dm.js');
 
-function portnotDef(){
+function getPortByArg(){
     var args = process.argv.slice(2);
 
-    var port = PORT;
+    var port = 9000;
 
     if(args.length > 0){
         port = args[0];
