@@ -60,7 +60,7 @@ server = net.createServer(function (sock) {
                 break;
 
             case 'get private message list':
-                reply.obj = dm.getPrivateMessageList(cmd.u1, cmd.u2);
+                reply.obj = dm.getPrivateMessageList(invo.u1, invo.u2);
                 break;
 
             case 'get subject':
