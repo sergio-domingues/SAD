@@ -139,9 +139,9 @@ exports.login = function (u, p, cb) {
 	client.write(JSON.stringify(invo));
 }
 
-exports.addPrivateMessage = function (msg, cb) {
+exports.addPrivateMessage = function (msg, u1, u2, cb) {
 	invo = new Invo('add private msg', cb);
-	invo.msg = msg;
+	invo.msg = {from : u1, to : u2};
 	client.write(JSON.stringify(invo));
 }
 

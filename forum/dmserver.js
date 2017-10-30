@@ -40,7 +40,7 @@ server = net.createServer(function (sock) {
                 break;
 
             case 'add subject':
-                reply.obj = dm.addSubject(invo.s);
+                reply.obj = dm.addSubject(invo.sbj);
                 break;
 
             case 'get subject list':
