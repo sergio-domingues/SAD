@@ -54,9 +54,90 @@ function getHostByArg(){
 
 
 dm.Start(HOST, PORT, function () {
-    // Write the command to the server 
-   	dm.getSubjectList (function (ml) {
-   		console.log ("here it is:")
-   		console.log (JSON.stringify(ml));
-   	});
+	//Recojemos los parametros con slice a partir del tercer elemento de la peticion
+	var args = process.argv.slice(3);
+	console.log(args);
+
+	if(args.length > 0){
+		//Procesamos el array de parametros para conocer la peticion al servidor
+		var aux = args[0];
+		console.log(aux);
+
+		switch (aux) {
+		// TODO complete list of commands
+
+		case 'add user':
+			dm.addUser (args[1],args[2],function (ml) {
+   			console.log ("here it is:")
+   			console.log (JSON.stringify(ml));
+			});
+			break;
+
+		case 'add subject':
+			dm.addSubject (args[1],function (ml) {
+   			console.log ("here it is:")
+   			console.log (JSON.stringify(ml));
+			});
+			break;
+
+		case 'get subject list':
+			dm.getSubjectList (function (ml) {
+   			console.log ("here it is:")
+   			console.log (JSON.stringify(ml));
+			});
+			break;
+
+		case 'get user list':
+			dm.getUserList (function (ml) {
+   			console.log ("here it is:")
+   			console.log (JSON.stringify(ml));
+			});
+			break;
+
+		case 'login':
+			dm.login (args[1],args[2],function (ml) {
+   			console.log ("here it is:")
+   			console.log (JSON.stringify(ml));
+			});
+			break;
+
+		case 'add private message':
+			dm.addPrivateMessage (args[1],args[2],function (ml) {
+   			console.log ("here it is:")
+   			console.log (JSON.stringify(ml));
+			});
+			break;
+
+		case 'get private message list':
+			dm.getPrivateMessageList (args[1],args[2],function (ml) {
+   			console.log ("here it is:")
+   			console.log (JSON.stringify(ml));
+			});
+			break;
+
+		case 'get subject':
+			dm.getSubject (args[1],function (ml) {
+   			console.log ("here it is:")
+   			console.log (JSON.stringify(ml));
+			});
+			break;
+
+		case 'add public message':
+			dm.addPublicMessage (args[1],function (ml) {
+   			console.log ("here it is:")
+   			console.log (JSON.stringify(ml));
+			});
+			break;
+
+		case 'get public message list':
+			dm.getPublicMessageList (args[1],function (ml) {
+   			console.log ("here it is:")
+   			console.log (JSON.stringify(ml));
+			});
+			break;
+
+		default:
+			console.log("Invalid Arguments: " + aux);
+	}
+    }
 });
