@@ -51,7 +51,7 @@ client.on('data', function (data) {
 
 		case 'add private message':
 			console.log('We received a reply for add command');
-			execCallBack(reply.invoId, null)
+			execCallBack(reply.invoId, reply.obj)
 			break;
 
 		case 'get private message list':
@@ -66,7 +66,7 @@ client.on('data', function (data) {
 
 		case 'add public message':
 			console.log('We received a reply for add command');
-			execCallBack(reply.invoId, null)
+			execCallBack(reply.invoId, reply.obj)
 			break;
 
 		case 'get public message list':
@@ -140,8 +140,8 @@ exports.login = function (u, p, cb) {
 }
 
 exports.addPrivateMessage = function (msg, u1, u2, cb) {
-	invo = new Invo('add private msg', cb);
-	invo.msg = {from : u1, to : u2};
+	invo = new Invo('add private message', cb);
+	invo.msg = {msg: msg, from : u1, to : u2};
 	client.write(JSON.stringify(invo));
 }
 

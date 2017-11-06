@@ -55,7 +55,7 @@ server = net.createServer(function (sock) {
                 reply.obj = dm.login(invo.u, invo.p);
                 break;
 
-            case 'add private msg':
+            case 'add private message':
                 reply.obj = dm.addPrivateMessage(invo.msg);
                 break;
 
@@ -72,7 +72,7 @@ server = net.createServer(function (sock) {
                 break;
 
             case 'get public message list':
-                reply.obj = dm.getPublicMessageList(cmd.sbj);
+                reply.obj = dm.getPublicMessageList(invo.sbj);
                 break;
 
             default:

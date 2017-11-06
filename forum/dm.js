@@ -81,6 +81,7 @@ exports.addPrivateMessage = function (msg){
 	var ml = privateMessages [k];
 	if (!ml) privateMessages [k] = [];
 	privateMessages[k].push (msg);
+	return "private message added successfully";
 }
 
 exports.getPrivateMessageList = function (u1, u2) {
@@ -103,9 +104,12 @@ exports.addPublicMessage = function (msg)
 	var ml = publicMessages [msg.to];
 	if (!ml) publicMessages [msg.to] = [];
 	publicMessages [msg.to].push(msg);
+	return "public message added successfully";
 }
 
 exports.getPublicMessageList = function (sbj) {
-	return JSON.stringify (publicMessages[sbj]);
+	var subject = this.getSubject(sbj);
+	console.log(">>>>"+subject)
+	return JSON.stringify (publicMessages[subject]);
 }
 
