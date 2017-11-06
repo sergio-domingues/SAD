@@ -123,7 +123,7 @@ dm.Start(HOST, PORT, function () {
 				break;
 
 			case 'add public message':
-				dm.addPublicMessage(args[1], function (ml) {
+				dm.addPublicMessage(args[1], args[2],args[3], function (ml) {
 					console.log("here it is:")
 					console.log(JSON.stringify(ml));
 				});

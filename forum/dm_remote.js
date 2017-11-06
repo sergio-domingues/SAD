@@ -158,9 +158,9 @@ exports.getSubject = function (sbj, cb) {
 	client.write(JSON.stringify(invo));
 }
 
-exports.addPublicMessage = function (msg, cb) {
+exports.addPublicMessage = function (msg,sbj,from, cb) {
 	var invo = new Invo('add public message', cb);
-	invo.msg = msg;
+	invo.msg = {value: msg, sbj: sbj, from:from};
 	client.write(JSON.stringify(invo));
 }
 

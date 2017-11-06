@@ -80,6 +80,7 @@ exports.addPrivateMessage = function (msg){
 	var k = (u1.toLowerCase().localeCompare(u2.toLowerCase())<0) ? u1+'_'+u2:u2+'_'+u1;
 	var ml = privateMessages [k];
 	if (!ml) privateMessages [k] = [];
+	msg.ts = new Date();
 	privateMessages[k].push (msg);
 	return "private message added successfully";
 }
@@ -101,15 +102,15 @@ exports.getSubject = function (sbj) {
 // adds a public message to storage
 exports.addPublicMessage = function (msg)
 {
-	var ml = publicMessages [msg.to];
-	if (!ml) publicMessages [msg.to] = [];
-	publicMessages [msg.to].push(msg);
+	var ml = publicMessages [msg.sbj];
+	if (!ml) publicMessages [msg.sbj] = [];
+	publicMessages [msg.sbj].push(new Post(msg.value, msg.from, new Date()));
+	console.log(publicMessages["id2"][1]);
 	return "public message added successfully";
 }
 
 exports.getPublicMessageList = function (sbj) {
 	var subject = this.getSubject(sbj);
-	console.log(">>>>"+subject)
 	return JSON.stringify (publicMessages[subject]);
 }
 
