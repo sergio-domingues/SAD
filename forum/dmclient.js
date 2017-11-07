@@ -64,12 +64,11 @@ dm.Start(HOST, PORT, function () {
 		console.log(aux);
 
 		switch (aux) {
-			// TODO complete list of commands
 
 			case 'add user':
 				dm.addUser(args[1], args[2], function (ml) {
 					console.log("here it is:")
-					console.log(JSON.stringify(ml));
+					console.log(JSON.stringify(ml)); //TODO add escape sequence in all
 				});
 				break;
 

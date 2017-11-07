@@ -24,6 +24,9 @@ server = net.createServer(function (sock) {
 
     // Add a 'data' event handler to this instance of socket
     sock.on('data', function (data) {
+        //TODO
+        //split data by escape sequence
+        //and do for each message
 
         console.log('request comes in...' + data);
         var str = data.toString();
