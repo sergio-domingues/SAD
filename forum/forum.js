@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var dm = require('./dm_local.js'); //change to ./dm_remote.js
+var dm = require('./dm_remote.js'); 
 
 var viewsdir = __dirname + '/views';
 app.set('views', viewsdir)

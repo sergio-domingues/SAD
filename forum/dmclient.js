@@ -68,7 +68,7 @@ dm.Start(HOST, PORT, function () {
 			case 'add user':
 				dm.addUser(args[1], args[2], function (ml) {
 					console.log("here it is:")
-					console.log(JSON.stringify(ml)); //TODO add escape sequence in all
+					console.log(JSON.stringify(ml));
 				});
 				break;
 

@@ -1,6 +1,6 @@
 var net = require('net');
 
-var client = new net.Socket();
+var client = new net.Socket(); //todo change to zeroMQ request 
 
 exports.Start = function (host, port, cb) {
 	client.connect(port, host, function () {
@@ -22,7 +22,6 @@ client.on('data', function (data) {
 	console.log('data comes in: ' + data);
 	var reply = JSON.parse(data.toString());
 	switch (reply.what) {
-		// TODO complete list of commands
 
 		case 'add user':
 			console.log('We received a reply for add command');
@@ -111,17 +110,23 @@ function Invo(str, cb) {
 //
 //
 
+const ESCAPE_SEQUENCE = "_&%!$!%&_";
+
+function writeAux (invo){
+	client.write(JSON.stringify(invo + ESCAPE_SEQUENCE));
+}
+
 exports.addUser = function (u, p, cb) {
 	invo = new Invo('add user', cb);
 	invo.u = u;
 	invo.p = p;
-	client.write(JSON.stringify(invo));
+	writeAux(invo);
 }
 
 exports.addSubject = function (s, cb) {
 	invo = new Invo('add subject', cb);
 	invo.sbj = s;
-	client.write(JSON.stringify(invo));
+	writeAux(invo);
 }
 
 exports.getSubjectList = function (cb) {
@@ -136,36 +141,36 @@ exports.login = function (u, p, cb) {
 	invo = new Invo('login', cb);
 	invo.u = u;
 	invo.p = p;
-	client.write(JSON.stringify(invo));
+	writeAux(invo);
 }
 
 exports.addPrivateMessage = function (msg, u1, u2, cb) {
 	invo = new Invo('add private message', cb);
 	invo.msg = {msg: msg, from : u1, to : u2};
-	client.write(JSON.stringify(invo));
+	writeAux(invo);
 }
 
 exports.getPrivateMessageList = function (u1, u2, cb) {
 	invo = new Invo('get private message list', cb);
 	invo.u1 = u1;
 	invo.u2 = u2;
-	client.write(JSON.stringify(invo));
+	writeAux(invo);
 }
 
 exports.getSubject = function (sbj, cb) {
 	invo = new Invo('get subject', cb);
 	invo.sbj = sbj;
-	client.write(JSON.stringify(invo));
+	writeAux(invo);
 }
 
 exports.addPublicMessage = function (msg,sbj,from, cb) {
 	var invo = new Invo('add public message', cb);
 	invo.msg = {value: msg, sbj: sbj, from:from};
-	client.write(JSON.stringify(invo));
+	writeAux(invo);
 }
 
 exports.getPublicMessageList = function (sbj, cb) {
 	var invo = new Invo('get public message list', cb);
 	invo.sbj = sbj;
-	client.write(JSON.stringify(invo));
+	writeAux(invo);
 }
