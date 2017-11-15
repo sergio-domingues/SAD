@@ -1,6 +1,6 @@
 var net = require('net');
 
-//var client = new net.Socket(); 
+
 
 //TODO change to zeroMQ request 
 var client = new zmq.socket('req');
