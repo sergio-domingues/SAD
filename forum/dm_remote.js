@@ -1,6 +1,9 @@
 var net = require('net');
 
-var client = new net.Socket(); //todo change to zeroMQ request 
+//var client = new net.Socket(); 
+
+//TODO change to zeroMQ request 
+var client = new zmq.socket('req');
 
 exports.Start = function (host, port, cb) {
 	client.connect(port, host, function () {
