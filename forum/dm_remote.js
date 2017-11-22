@@ -1,15 +1,19 @@
 var net = require('net');
+var zmq = require('zmq');
 
 //var client = new net.Socket(); 
 
-//TODO change to zeroMQ request 
-var client = new zmq.socket('req');
+var requester = new zmq.socket('req');
 
 exports.Start = function (host, port, cb) {
-	client.connect(port, host, function () {
+
+	requester.connect("tcp://"+host+":"+port);
+	console.log("CLient connected");
+	if (cb != null) cb();
+	/*client.connect(port, host, function () {
 		console.log('Connected to: ' + host + ':' + port);
 		if (cb != null) cb();
-	});
+	});*/
 }
 
 
@@ -21,9 +25,12 @@ var invoCounter = 0; // current invocation number is key to access "callbacks".
 // extract the reply, find the callback, and call it.
 // Its useful to study "exports" functions before studying this one.
 //
-client.on('data', function (data) {
+requester.on('message', function (data) {
+
 	console.log('data comes in: ' + data);
 	var reply = JSON.parse(data.toString());
+
+	/*
 	switch (reply.what) {
 
 		case 'add user':
@@ -78,7 +85,7 @@ client.on('data', function (data) {
 
 		default:
 			console.log("Panic: we got this: " + reply.what);
-	}
+	}*/
 });
 
 function execCallBack(id, obj) {
@@ -92,7 +99,7 @@ function execCallBack(id, obj) {
 }
 
 // Add a 'close' event handler for the client socket
-client.on('close', function () {
+requester.on('close', function () {
 	console.log('Connection closed');
 });
 
@@ -113,10 +120,10 @@ function Invo(str, cb) {
 //
 //
 
-const ESCAPE_SEQUENCE = "_&%!$!%&_";
+//const ESCAPE_SEQUENCE = "_&%!$!%&_";
 
 function writeAux (invo){
-	client.write(JSON.stringify(invo + ESCAPE_SEQUENCE));
+	requester.send(JSON.stringify(invo));
 }
 
 exports.addUser = function (u, p, cb) {
@@ -133,11 +140,11 @@ exports.addSubject = function (s, cb) {
 }
 
 exports.getSubjectList = function (cb) {
-	client.write(JSON.stringify(new Invo('get subject list', cb)));
+	requester.send(JSON.stringify(new Invo('get subject list', cb)));
 }
 
 exports.getUserList = function (cb) {
-	client.write(JSON.stringify(new Invo('get user list', cb)));
+	requester.send(JSON.stringify(new Invo('get user list', cb)));
 }
 
 exports.login = function (u, p, cb) {

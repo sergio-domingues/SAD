@@ -61,7 +61,6 @@ dm.Start(HOST, PORT, function () {
 	if (args.length > 0) {
 		//Procesamos el array de parametros para conocer la peticion al servidor
 		var aux = args[0];
-		console.log(aux);
 
 		switch (aux) {
 
@@ -79,7 +78,7 @@ dm.Start(HOST, PORT, function () {
 				});
 				break;
 
-			case 'get subject list':
+			case 'get subject list':		
 				dm.getSubjectList(function (ml) {
 					console.log("here it is:")
 					console.log(JSON.stringify(ml));

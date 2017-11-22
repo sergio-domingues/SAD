@@ -3,6 +3,7 @@ var HOST = '127.0.0.1';
 var PORT = getPortByArg();
 
 var dm = require('./dm.js');
+var zmq = require('zmq');
 
 function getPortByArg() {
     var args = process.argv.slice(2);
@@ -16,42 +17,43 @@ function getPortByArg() {
     return port;
 }
 
-const ESCAPE_SEQUENCE = "_&%!$!%&_";
-
-//TODO create zeroMQ request
+//const ESCAPE_SEQUENCE = "_&%!$!%&_";
 
 // Create the server socket, on client connections, bind event handlers
-server = net.createServer(function (sock) {
+var responder = zmq.socket('rep');
+let address = "tcp://" + HOST + ":" + PORT;
+console.log(address)
+responder.connect(address);
 
-    // We have a connection - a socket object is assigned to the connection automatically
-    console.log('Conected: ' + sock.remoteAddress + ':' + sock.remotePort);
-
-    // Add a 'data' event handler to this instance of socket
-    sock.on('data', function (data) {
-        
-        console.log('request comes in...' + data);
-        
-        var str = data.toString();
-
-        //in order to avoid msgs getting collapsed in 1 big msg leading to miss processing of requests
-        let splittedData = str.split(ESCAPE_SEQUENCE);  
-
-        for (let i = 0; i < splittedData.length; i++){
-            let reply = processData(splittedData[i]);            
-            sock.write(JSON.stringify(reply));
-        }       
-    });
+responder.bind(address, function (err) {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log("Listening on " + address);
+    }
+});
 
 
-    // Add a 'close' event handler to this instance of socket
-    sock.on('close', function (data) {
-        console.log('Connection closed');
-    });
+responder.on('message', function (data) {
+
+    console.log('request comes in...' + data.toString());
+
+    var str = data.toString();
+
+    let reply = processData(data);
+    sock.write(JSON.stringify(reply));
 
 });
 
-function processData(msg){
-   
+// Add a 'close' event handler to this instance of socket
+responder.on('close', function (fd, ep) {
+    console.log('close, endpoint:', ep);
+});
+
+
+
+function processData(msg) {
+
     var invo = JSON.parse(msg);
     console.log('request is:' + invo.what + ':' + msg);
 
@@ -107,8 +109,3 @@ function processData(msg){
     }
     return reply;
 }
-
-
-server.listen(PORT, HOST, function () {
-    console.log('Server listening on ' + HOST + ':' + PORT);
-});
