@@ -3,13 +3,16 @@ var zmq = require('zmq');
 
 //var client = new net.Socket(); 
 
-var requester = new zmq.socket('req');
+var requester = zmq.socket('req');
 
 exports.Start = function (host, port, cb) {
 
+	//Connect to zmq server
 	requester.connect("tcp://"+host+":"+port);
-	console.log("CLient connected");
+	console.log("Client connected");
 	if (cb != null) cb();
+
+	//Connect to net server
 	/*client.connect(port, host, function () {
 		console.log('Connected to: ' + host + ':' + port);
 		if (cb != null) cb();
@@ -101,6 +104,7 @@ function execCallBack(id, obj) {
 // Add a 'close' event handler for the client socket
 requester.on('close', function () {
 	console.log('Connection closed');
+	requester.close();
 });
 
 

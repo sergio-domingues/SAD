@@ -1,9 +1,10 @@
-var net = require('net');
+var dm = require('./dm.js');
+//var net = require('net');
+var zmq = require('zmq');
+
 var HOST = '127.0.0.1';
 var PORT = getPortByArg();
 
-var dm = require('./dm.js');
-var zmq = require('zmq');
 
 function getPortByArg() {
     var args = process.argv.slice(2);
@@ -41,13 +42,14 @@ responder.on('message', function (data) {
     var str = data.toString();
 
     let reply = processData(data);
-    sock.write(JSON.stringify(reply));
+    responder.send(JSON.stringify(reply));
 
 });
 
 // Add a 'close' event handler to this instance of socket
 responder.on('close', function (fd, ep) {
     console.log('close, endpoint:', ep);
+    responder.close();
 });
 
 
