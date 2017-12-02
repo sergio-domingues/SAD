@@ -1,31 +1,38 @@
 var dm = require('./dm.js');
-//var net = require('net');
 var zmq = require('zmq');
 
 var HOST = '127.0.0.1';
-var PORT = getPortByArg();
+var svPort, pubPort;
 
 
-function getPortByArg() {
+function getPortsByArg() {
     var args = process.argv.slice(2);
 
-    var port = 9000;
-
-    if (args.length > 0) {
-        port = args[0];
+    if (args.length > 0 && args.length < 3) {
+        svPort = args[0];
+        pubPort = args[1]
+    } else {
+        console.log("dmserver> wrong params!\nusage: node dmserver <svPort> <pubPort>")
     }
-
-    return port;
 }
 
-//const ESCAPE_SEQUENCE = "_&%!$!%&_";
+// ports initialization
+getPortsByArg();
+
+
+// Create the pub socket for propagation of new messages 
+var pubber = zmq.socket('pub');
+pubber.bindSync('tcp://' + HOST + ":" + pubPort);
+console.log('Publisher bound to port ' + pubPort);
+
 
 // Create the server socket, on client connections, bind event handlers
 var responder = zmq.socket('rep');
-let address = "tcp://" + HOST + ":" + PORT;
-console.log(address)
-responder.connect(address);
+let address = "tcp://" + HOST + ":" + svPort;
+console.log("server running on: " + address)
 
+
+//client binding
 responder.bind(address, function (err) {
     if (err) {
         console.log(err);
@@ -36,22 +43,16 @@ responder.bind(address, function (err) {
 
 
 responder.on('message', function (data) {
-
     console.log('request comes in...' + data.toString());
-
-    var str = data.toString();
 
     let reply = processData(data);
     responder.send(JSON.stringify(reply));
-
 });
 
-// Add a 'close' event handler to this instance of socket
 responder.on('close', function (fd, ep) {
     console.log('close, endpoint:', ep);
     responder.close();
 });
-
 
 
 function processData(msg) {
@@ -98,7 +99,10 @@ function processData(msg) {
             break;
 
         case 'add public message':
-            reply.obj = dm.addPublicMessage(invo.msg);
+            reply.obj = dm.addPublicMessage(invo.msg); 
+
+            // the line below creates a loop between forum and server            
+            // pubber.send(['new messages', invo.msg]);
             break;
 
         case 'get public message list':

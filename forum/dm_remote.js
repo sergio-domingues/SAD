@@ -5,35 +5,27 @@ var zmq = require('zmq');
 
 var requester = zmq.socket('req');
 
-exports.Start = function (host, port, cb) {
-
-	//Connect to zmq server
-	requester.connect("tcp://"+host+":"+port);
-	console.log("Client connected");
-	if (cb != null) cb();
-
-	//Connect to net server
-	/*client.connect(port, host, function () {
-		console.log('Connected to: ' + host + ':' + port);
-		if (cb != null) cb();
-	});*/
-}
-
-
 var callbacks = {} // hash of callbacks. Key is invoId
 var invoCounter = 0; // current invocation number is key to access "callbacks".
 
+
+exports.Start = function (host, port, cb) {
+
+	//Connect to zmq server
+	requester.connect("tcp://" + host + ":" + port);
+	console.log("Client connected");
+	if (cb != null) cb();
+}
 //
 // When data comes from server. It is a reply from our previous request
 // extract the reply, find the callback, and call it.
 // Its useful to study "exports" functions before studying this one.
 //
 requester.on('message', function (data) {
-
 	console.log('data comes in: ' + data);
-	var reply = JSON.parse(data.toString());
 
-	/*
+	let reply = JSON.parse(data);
+
 	switch (reply.what) {
 
 		case 'add user':
@@ -83,12 +75,13 @@ requester.on('message', function (data) {
 
 		case 'get public message list':
 			console.log('We received a reply for: ' + reply.what + ':' + reply.invoId);
+			console.log(reply.obj)
 			execCallBack(reply.invoId, reply.obj)
 			break;
 
 		default:
 			console.log("Panic: we got this: " + reply.what);
-	}*/
+	}
 });
 
 function execCallBack(id, obj) {
@@ -124,9 +117,7 @@ function Invo(str, cb) {
 //
 //
 
-//const ESCAPE_SEQUENCE = "_&%!$!%&_";
-
-function writeAux (invo){
+function writeAux(invo) {
 	requester.send(JSON.stringify(invo));
 }
 
@@ -160,7 +151,11 @@ exports.login = function (u, p, cb) {
 
 exports.addPrivateMessage = function (msg, u1, u2, cb) {
 	invo = new Invo('add private message', cb);
-	invo.msg = {msg: msg, from : u1, to : u2};
+	invo.msg = {
+		msg: msg,
+		from: u1,
+		to: u2
+	};
 	writeAux(invo);
 }
 
@@ -177,9 +172,13 @@ exports.getSubject = function (sbj, cb) {
 	writeAux(invo);
 }
 
-exports.addPublicMessage = function (msg,sbj,from, cb) {
+exports.addPublicMessage = function (msg, sbj, from, cb) {
 	var invo = new Invo('add public message', cb);
-	invo.msg = {value: msg, sbj: sbj, from:from};
+	invo.msg = {
+		value: msg,
+		sbj: sbj,
+		from: from
+	};
 	writeAux(invo);
 }
 

@@ -11,12 +11,15 @@ app.set('views', viewsdir)
 // node forum <serverPort> <serverPubPort> <serverPubUrlTopic> 
 
 //argument processing
+let HOST = "127.0.0.1";
+
 let args = process.argv.slice(2),
 	port = args[0],
 	pubDataPort = args[1]
 	pubDataUrl = args[2];
+	
 
-dm.Start("127.0.0.1", port, function () {
+dm.Start(HOST, port, function () {
 
 	// called on connection
 	function get_page(req, res) {
@@ -42,20 +45,34 @@ dm.Start("127.0.0.1", port, function () {
 		get_page(req, res);
 	});
 
-
 	//========  PUB-SUB Handling  =========
 
-	//subscription to data publisher 
+	//subscription to data publisher server
 
 	subSocket = zmq.socket('sub');
 	subSocket.connect('tcp://127.0.0.1:'+ pubDataPort);
 	subSocket.subscribe(pubDataUrl);
 
-	subSocket.on('message', function(topic, message){
+	//processing new messages
+	subSocket.on('message', function(topic, message){	
 		
-		console.log("PUB/SUB: " + message);
-		//TODO is it needed to add some meta params ?
-		io.emit(message);
+		//duplicated code, maybe refactor to a function TODO 
+		console.log("Event: topic: "+topic + "\t message: " + message);
+		//var message = JSON.parse(message);
+		console.log(message.toString())
+
+		message.ts = new Date(); // timestamp
+		if (message.isPrivate) {
+			dm.addPrivateMessage(message.msg, message.to, message.from, function (ml) {
+				console.log(ml);
+				io.emit('message', JSON.stringify(message));
+			});
+		} else {
+			dm.addPublicMessage(message.value, message.sbj, message.from, function (ml) {
+				console.log(ml);
+				//io.emit('message', JSON.stringify(message));
+			});
+		}
 	})
 	//=====================================
 
@@ -70,15 +87,18 @@ dm.Start("127.0.0.1", port, function () {
 		// connected client
 		// TODO: We better optimize message delivery using rooms.
 		sock.on('message', function (msgStr) {
+			
 			console.log("Event: message: " + msgStr);
 			var msg = JSON.parse(msgStr);
 			msg.ts = new Date(); // timestamp
 			if (msg.isPrivate) {
-				dm.addPrivateMessage(msg, function () {
+				dm.addPrivateMessage(msg.msg, msg.to, msg.from, function (ml) {
+					console.log(ml);
 					io.emit('message', JSON.stringify(msg));
 				});
 			} else {
-				dm.addPublicMessage(msg, function () {
+				dm.addPublicMessage(msg.msg, msg.to, msg.from, function (ml) {
+					console.log(ml);
 					io.emit('message', JSON.stringify(msg));
 				});
 			}
