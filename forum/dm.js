@@ -126,7 +126,7 @@ exports.addPublicMessage = function (msg) {
 
 	// pre validation because sbj from web comes as id0 p.ex 
 	// and sbj from terminal client can come as "Literatura" p.ex
-	let sbj = msg.sbj;
+	let sbj = msg.to;
 
 	if (!subjects[sbj])
 		sbj = Object.keys(subjects)[(Object.values(subjects).indexOf(msg.sbj))];
@@ -135,7 +135,7 @@ exports.addPublicMessage = function (msg) {
 	var ml = publicMessages[sbj];
 	if (!ml) publicMessages[sbj] = [];
 
-	publicMessages[sbj].push(new Post(msg.value, msg.from, new Date()));
+	publicMessages[sbj].push(new Post(msg.msg, msg.from, new Date()));
 
 	console.log(publicMessages[sbj]);
 
@@ -149,4 +149,8 @@ exports.getPublicMessageList = function (sbj) {
 		return JSON.stringify(publicMessages[id])
 	} else
 		return JSON.stringify(publicMessages[sbj]);
+}
+
+exports.getSubjectId = function(sbj){
+	return Object.keys(subjects)[(Object.values(subjects).indexOf(sbj))];
 }

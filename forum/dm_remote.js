@@ -152,9 +152,11 @@ exports.login = function (u, p, cb) {
 exports.addPrivateMessage = function (msg, u1, u2, cb) {
 	invo = new Invo('add private message', cb);
 	invo.msg = {
+		isPrivate: true,
 		msg: msg,
 		from: u1,
-		to: u2
+		to: u2,
+		ts: null
 	};
 	writeAux(invo);
 }
@@ -175,9 +177,11 @@ exports.getSubject = function (sbj, cb) {
 exports.addPublicMessage = function (msg, sbj, from, cb) {
 	var invo = new Invo('add public message', cb);
 	invo.msg = {
-		value: msg,
-		sbj: sbj,
-		from: from
+		msg: msg,
+		from: from,
+		isPrivate: false,
+		to: sbj,
+		ts: null
 	};
 	writeAux(invo);
 }

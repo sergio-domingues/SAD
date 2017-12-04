@@ -288,7 +288,7 @@ var messageArea = null;  // current message list we display
 // On message (private or public) from server, append it to message area.
 socket.on('message', function(msgStr){
     var msg = JSON.parse (msgStr);
-    msg.ts = new Date (msg.ts);
+    msg.ts = new Date();
     if (messageArea.isPrivate == msg.isPrivate && 
         (messageArea.toId == msg.to || messageArea.toId == msg.from)) {
         dom_push_message (msg);

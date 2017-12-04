@@ -16,8 +16,8 @@ let HOST = "127.0.0.1";
 let args = process.argv.slice(2),
 	port = args[0],
 	pubDataPort = args[1]
-	pubDataUrl = args[2];
-	
+pubDataUrl = args[2];
+
 
 dm.Start(HOST, port, function () {
 
@@ -50,29 +50,17 @@ dm.Start(HOST, port, function () {
 	//subscription to data publisher server
 
 	subSocket = zmq.socket('sub');
-	subSocket.connect('tcp://127.0.0.1:'+ pubDataPort);
+	subSocket.connect('tcp://127.0.0.1:' + pubDataPort);
 	subSocket.subscribe(pubDataUrl);
 
 	//processing new messages
-	subSocket.on('message', function(topic, message){	
-		
-		//duplicated code, maybe refactor to a function TODO 
-		console.log("Event: topic: "+topic + "\t message: " + message);
-		//var message = JSON.parse(message);
-		console.log(message.toString())
+	subSocket.on('message', function (topic, message) {
 
-		message.ts = new Date(); // timestamp
-		if (message.isPrivate) {
-			dm.addPrivateMessage(message.msg, message.to, message.from, function (ml) {
-				console.log(ml);
-				io.emit('message', JSON.stringify(message));
-			});
-		} else {
-			dm.addPublicMessage(message.value, message.sbj, message.from, function (ml) {
-				console.log(ml);
-				//io.emit('message', JSON.stringify(message));
-			});
-		}
+		//duplicated code, maybe refactor to a function TODO 
+		console.log("Event: topic: " + topic + "\t message: " + message);
+		var message = JSON.parse(message);
+
+		io.emit('message', JSON.stringify(message));
 	})
 	//=====================================
 
@@ -87,7 +75,7 @@ dm.Start(HOST, port, function () {
 		// connected client
 		// TODO: We better optimize message delivery using rooms.
 		sock.on('message', function (msgStr) {
-			
+
 			console.log("Event: message: " + msgStr);
 			var msg = JSON.parse(msgStr);
 			msg.ts = new Date(); // timestamp

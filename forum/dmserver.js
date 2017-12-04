@@ -101,8 +101,12 @@ function processData(msg) {
         case 'add public message':
             reply.obj = dm.addPublicMessage(invo.msg); 
 
-            // the line below creates a loop between forum and server            
-            // pubber.send(['new messages', invo.msg]);
+            // the line below creates a loop between forum and server  
+            console.log("<<<<<<<<" , invo.msg);          
+
+            invo.msg.to =  dm.getSubjectId(invo.msg.to);
+
+            pubber.send(['new messages', JSON.stringify(invo.msg)]);
             break;
 
         case 'get public message list':
