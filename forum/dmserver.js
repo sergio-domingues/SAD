@@ -3,21 +3,30 @@ var zmq = require('zmq');
 
 var HOST = '127.0.0.1';
 var svPort, pubPort;
+var dataServerList = [];
 
-
-function getPortsByArg() {
+function parseArgs() {
     var args = process.argv.slice(2);
+
+    console.log(args.toString());
 
     if (args.length > 0 && args.length < 3) {
         svPort = args[0];
         pubPort = args[1]
+
+    } else if (args.length > 0 && args.length < 4) {
+        svPort = args[0];
+        pubPort = args[1]
+
+        dataServerList = args[2].split(",");
+        console.log(dataServerList.length, dataServerList.toString());
     } else {
         console.log("dmserver> wrong params!\nusage: node dmserver <svPort> <pubPort>")
     }
 }
 
 // ports initialization
-getPortsByArg();
+parseArgs();
 
 
 // Create the pub socket for propagation of new messages 
@@ -25,6 +34,24 @@ var pubber = zmq.socket('pub');
 pubber.bindSync('tcp://' + HOST + ":" + pubPort);
 console.log('Publisher bound to port ' + pubPort);
 
+// Create the sub socket for data server (propagation) message reception
+var subSocket = zmq.socket('sub');
+
+for (let i = 0; i < dataServerList.length; i++) {
+    let ret = subSocket.connect(dataServerList[i]);
+}
+
+subSocket.subscribe('checkpoint');
+
+//processing new messages (propagated from other data servers)
+subSocket.on('message', function (topic, message) {
+
+    //duplicated code, maybe refactor to a function TODO 
+    console.log("Event: topic: " + topic + "\t message: " + message);
+    var message = JSON.parse(message);
+
+    pubber.send(['new messages', message])
+})
 
 // Create the server socket, on client connections, bind event handlers
 var responder = zmq.socket('rep');
@@ -47,6 +74,8 @@ responder.on('message', function (data) {
 
     let reply = processData(data);
     responder.send(JSON.stringify(reply));
+   
+    pubber.send(['checkpoint', reply]);
 });
 
 responder.on('close', function (fd, ep) {
@@ -99,12 +128,9 @@ function processData(msg) {
             break;
 
         case 'add public message':
-            reply.obj = dm.addPublicMessage(invo.msg); 
+            reply.obj = dm.addPublicMessage(invo.msg);
 
-            // the line below creates a loop between forum and server  
-            console.log("<<<<<<<<" , invo.msg);          
-
-            invo.msg.to =  dm.getSubjectId(invo.msg.to);
+            invo.msg.to = dm.getSubjectId(invo.msg.to);
 
             pubber.send(['new messages', JSON.stringify(invo.msg)]);
             break;
