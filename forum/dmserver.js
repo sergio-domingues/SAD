@@ -50,7 +50,7 @@ subSocket.on('message', function (topic, message) {
 
     //duplicated code, maybe refactor to a function TODO 
     console.log("Event: topic: " + topic + "\t message: " + message);
-   
+
     pubber.send(['new messages', message])
 })
 
@@ -75,7 +75,7 @@ responder.on('message', function (data) {
 
     let reply = processData(data);
     responder.send(JSON.stringify(reply));
-   
+
     //pubber.send(['checkpoint', reply]);
 });
 
@@ -132,9 +132,10 @@ function processData(msg) {
             reply.obj = dm.addPublicMessage(invo.msg);
 
             invo.msg.to = dm.getSubjectId(invo.msg.to);
-
-            pubber.send(['new messages', JSON.stringify(invo.msg)]);
+            
             pubber.send(['checkpoint', JSON.stringify(invo.msg)]);
+            //retardo(3000);
+            pubber.send(['new messages', JSON.stringify(invo.msg)]);
             break;
 
         case 'get public message list':
@@ -146,4 +147,12 @@ function processData(msg) {
 
     }
     return reply;
+}
+
+function retardo(n) {
+    time = new Date().getTime();
+    time2 = time + n;
+    while (time < time2) {
+        time = new Date().getTime();
+    }
 }
