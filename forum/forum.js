@@ -14,12 +14,13 @@ app.set('views', viewsdir)
 let HOST = "127.0.0.1";
 
 let args = process.argv.slice(2),
-	port = args[0],
-	pubDataPort = args[1]
-pubDataUrl = args[2];
+	svPort = args[0],
+	pubDataPort = args[1],
+	pubDataUrl = args[2],
+	httpPort = args[3];
 
 
-dm.Start(HOST, port, function () {
+dm.Start(HOST, svPort, function () {
 
 	// called on connection
 	function get_page(req, res) {
@@ -163,8 +164,8 @@ dm.Start(HOST, port, function () {
 			});
 		});
 	});
-
 	// Listen for connections !!
-	http.listen(10000, on_startup);
+	//TODO receive port by argument
+	http.listen( (httpPort != null ? httpPort : 10000), on_startup);
 
 })

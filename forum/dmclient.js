@@ -1,5 +1,7 @@
 var dm = require('./dm_remote.js');
 
+//usage: node dmclient host:port comando
+
 //Asignamos el host y el puerto mediante la funcion auxiliar que implementamos
 var HOST = getHostByArg();
 var PORT = getPortByArg();

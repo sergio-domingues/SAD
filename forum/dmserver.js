@@ -5,6 +5,8 @@ var HOST = '127.0.0.1';
 var svPort, pubPort;
 var dataServerList = [];
 
+//node dmserver <serverport> <publicationPort> <subscriptionList "tcp://address:port,tcp://address:port,...">
+
 function parseArgs() {
     var args = process.argv.slice(2);
 
@@ -48,8 +50,7 @@ subSocket.on('message', function (topic, message) {
 
     //duplicated code, maybe refactor to a function TODO 
     console.log("Event: topic: " + topic + "\t message: " + message);
-    var message = JSON.parse(message);
-
+   
     pubber.send(['new messages', message])
 })
 
@@ -75,7 +76,7 @@ responder.on('message', function (data) {
     let reply = processData(data);
     responder.send(JSON.stringify(reply));
    
-    pubber.send(['checkpoint', reply]);
+    //pubber.send(['checkpoint', reply]);
 });
 
 responder.on('close', function (fd, ep) {
@@ -133,6 +134,7 @@ function processData(msg) {
             invo.msg.to = dm.getSubjectId(invo.msg.to);
 
             pubber.send(['new messages', JSON.stringify(invo.msg)]);
+            pubber.send(['checkpoint', JSON.stringify(invo.msg)]);
             break;
 
         case 'get public message list':
