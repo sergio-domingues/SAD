@@ -8,11 +8,11 @@ var dm = require('./dm_remote.js');
 var viewsdir = __dirname + '/views';
 app.set('views', viewsdir)
 
-// node forum <serverPort> <serverPubPort> <serverPubUrlTopic> 
+// node forum <serverPort> <serverPubPort> <serverPubUrlTopic> <httpPort>
 
-//argument processing
 let HOST = "127.0.0.1";
 
+//argument processing
 let args = process.argv.slice(2),
 	svPort = args[0],
 	pubDataPort = args[1],
@@ -59,11 +59,27 @@ dm.Start(HOST, svPort, function () {
 
 		//duplicated code, maybe refactor to a function TODO 
 		console.log("Event: topic: " + topic + "\t message: " + message);
-		var message = JSON.parse(message);
-
-		io.emit('message', JSON.stringify(message));
+		
+		addMessage(message, false);
 	})
 	//=====================================
+
+	
+	addMessage = function (data, propagate) {
+		var msg = JSON.parse(data);
+		msg.ts = new Date(); // timestamp
+		if (msg.isPrivate) {
+			dm.addPrivateMessage(msg.msg, msg.to, msg.from, propagate, function (ml) {
+				console.log(ml);
+				io.emit('message', JSON.stringify(msg));
+			});
+		} else {
+			dm.addPublicMessage(msg.msg, msg.to, msg.from, propagate, function (ml) {
+				console.log(ml);
+				io.emit('message', JSON.stringify(msg));
+			});
+		}
+	}
 
 
 	io.on('connection', function (sock) {
@@ -76,21 +92,8 @@ dm.Start(HOST, svPort, function () {
 		// connected client
 		// TODO: We better optimize message delivery using rooms.
 		sock.on('message', function (msgStr) {
-
 			console.log("Event: message: " + msgStr);
-			var msg = JSON.parse(msgStr);
-			msg.ts = new Date(); // timestamp
-			if (msg.isPrivate) {
-				dm.addPrivateMessage(msg.msg, msg.to, msg.from, function (ml) {
-					console.log(ml);
-					io.emit('message', JSON.stringify(msg));
-				});
-			} else {
-				dm.addPublicMessage(msg.msg, msg.to, msg.from, function (ml) {
-					console.log(ml);
-					io.emit('message', JSON.stringify(msg));
-				});
-			}
+			addMessage(msgStr, true);
 		});
 
 		// New subject added to storage, and broadcasted
@@ -165,7 +168,6 @@ dm.Start(HOST, svPort, function () {
 		});
 	});
 	// Listen for connections !!
-	//TODO receive port by argument
-	http.listen( (httpPort != null ? httpPort : 10000), on_startup);
+	http.listen((httpPort != null ? httpPort : 10000), on_startup);
 
 })

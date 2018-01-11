@@ -544,6 +544,9 @@ function do_sendMessage () {
     if (msgStr != '') {
         var msg = new Message (msgStr, userName, messageArea.toId, 
                 messageArea.isPrivate, '');
+                
+        console.log(msg);
+
         socket.emit('message', JSON.stringify(msg));
     }
     $('#msg').val('');

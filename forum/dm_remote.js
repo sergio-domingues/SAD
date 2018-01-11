@@ -8,9 +8,10 @@ var requester = zmq.socket('req');
 var callbacks = {} // hash of callbacks. Key is invoId
 var invoCounter = 0; // current invocation number is key to access "callbacks".
 
+var svPort = null;
 
 exports.Start = function (host, port, cb) {
-
+	this.svPort = port;
 	//Connect to zmq server
 	requester.connect("tcp://" + host + ":" + port);
 	console.log("Client connected");
@@ -149,14 +150,16 @@ exports.login = function (u, p, cb) {
 	writeAux(invo);
 }
 
-exports.addPrivateMessage = function (msg, u1, u2, cb) {
+exports.addPrivateMessage = function (msg, u1, u2, propagate, cb) {
 	invo = new Invo('add private message', cb);
+	invo.port = svPort;
 	invo.msg = {
 		isPrivate: true,
 		msg: msg,
 		from: u1,
 		to: u2,
-		ts: null
+		ts: null,
+		propagate: propagate
 	};
 	writeAux(invo);
 }
@@ -174,14 +177,16 @@ exports.getSubject = function (sbj, cb) {
 	writeAux(invo);
 }
 
-exports.addPublicMessage = function (msg, sbj, from, cb) {
+exports.addPublicMessage = function (msg, sbj, from, propagate, cb) {
 	var invo = new Invo('add public message', cb);
+	invo.port = svPort;
 	invo.msg = {
 		msg: msg,
 		from: from,
 		isPrivate: false,
 		to: sbj,
-		ts: null
+		ts: null,
+		propagate: propagate
 	};
 	writeAux(invo);
 }

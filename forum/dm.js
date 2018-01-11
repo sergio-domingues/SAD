@@ -137,8 +137,6 @@ exports.addPublicMessage = function (msg) {
 
 	publicMessages[sbj].push(new Post(msg.msg, msg.from, new Date()));
 
-	console.log(publicMessages[sbj]);
-
 	return "public message added successfully";
 }
 

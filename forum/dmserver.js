@@ -71,7 +71,7 @@ responder.bind(address, function (err) {
 
 
 responder.on('message', function (data) {
-    console.log('request comes in...' + data.toString());
+    //console.log('request comes in...' + data.toString());
 
     let reply = processData(data);
     responder.send(JSON.stringify(reply));
@@ -131,11 +131,14 @@ function processData(msg) {
         case 'add public message':
             reply.obj = dm.addPublicMessage(invo.msg);
 
-            invo.msg.to = dm.getSubjectId(invo.msg.to);
-            
-            pubber.send(['checkpoint', JSON.stringify(invo.msg)]);
-            //retardo(3000);
-            pubber.send(['new messages', JSON.stringify(invo.msg)]);
+            if (invo.msg.propagate) {
+                pubber.send(['checkpoint', JSON.stringify(invo.msg)]);
+                //retardo(3000);
+                
+                //to avoid duplicate msg on browser forum of client msg sender
+                if(invo.svPort != this.svPort)
+                    pubber.send(['new messages', JSON.stringify(invo.msg)]);
+            }
             break;
 
         case 'get public message list':
